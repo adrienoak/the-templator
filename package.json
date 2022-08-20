@@ -1,0 +1,49 @@
+{
+  "name": "the-templator",
+  "version": "0.0.0",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/index.d.ts"
+      ]
+    }
+  },
+  "scripts": {
+    "test": "vitest",
+    "build": "tsup"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/glob": "^7.2.0",
+    "@types/mock-fs": "^4.13.1",
+    "c8": "^7.12.0",
+    "fast-check": "^3.1.1",
+    "mock-fs": "^5.1.4",
+    "tsup": "^6.2.1",
+    "typescript": "^4.7.4",
+    "vite": "^3.0.4",
+    "vitest": "^0.21.0"
+  },
+  "dependencies": {
+    "@swan-io/boxed": "^0.11.1",
+    "get-all-files-in-path": "^1.0.4",
+    "get-all-folders": "^1.1.0",
+    "string-template-parse": "^0.0.0",
+    "zod": "^3.18.0"
+  },
+  "description": ""
+}
