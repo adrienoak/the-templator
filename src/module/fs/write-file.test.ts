@@ -1,7 +1,8 @@
 import mockFS from "mock-fs";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { describe, expect, it, vi } from "vitest";
+import { assert, describe, expect, it, vi } from "vitest";
+import { read_file } from "./read-file";
 import {
   write_file,
   write_file_sync,
@@ -20,6 +21,8 @@ describe("write_file", () => {
     const read = readFileSync(path, { encoding: "utf-8" });
     expect(read).toBe(content);
     expect(result.isOk()).toBe(true);
+    assert(result.isOk());
+    // expect(result.get()).toBe(path);
     mockFS.restore();
   });
 
@@ -56,9 +59,7 @@ describe("write_file", () => {
 
   it("if injected function fails, returns an error", async () => {
     const file = "file.js";
-    const mock = vi.fn().mockImplementation(() => {
-      throw new Error();
-    });
+    const mock = vi.fn().mockRejectedValue(new Error());
     mockFS({ [file]: "here" });
 
     const path = join(process.cwd(), file);
@@ -69,6 +70,28 @@ describe("write_file", () => {
 
     expect(result.isOk()).toBe(false);
     expect(mock).toHaveBeenCalledOnce();
+    mockFS.restore();
+  });
+
+  it("nested file inside multiple folders", async () => {
+    const path1 = join(process.cwd(), "path", "path-enter");
+    mockFS({ [path1]: "hello" });
+
+    const content = "test";
+    const result = await write_file(path1, content);
+
+    expect(result.isOk()).toBe(true);
+    mockFS.restore();
+  });
+
+  it("nested file inside multiple folders, fails if folder doesnt exist", async () => {
+    const path1 = join(process.cwd(), "path", "path-enter");
+    mockFS({});
+
+    const content = "test";
+    const result = await write_file(path1, content);
+
+    expect(result.isOk()).toBe(false);
     mockFS.restore();
   });
 });

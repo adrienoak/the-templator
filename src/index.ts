@@ -1,17 +1,38 @@
 import { Result } from "@swan-io/boxed";
+import { rmSync } from "node:fs";
+import { join } from "node:path";
+import { the_templator } from "./entry";
 
-async function test() {
-  return new Promise((r) => setTimeout(() => r(1), 1000));
+const auto_delete =
+  process.argv.length === 3 && process.argv[2] === "auto_delete";
+
+function delete_stuff() {
+  Result.fromExecution(() =>
+    rmSync(join(process.cwd(), "trash"), { force: false, recursive: true })
+  );
 }
+
 async function main() {
-  const res = await Result.fromPromise(test());
-  console.log("res:", res);
-  const withStuff = Result.fromExecution(witherror);
-  console.log("withStuff:", withStuff.isError());
-}
+  delete_stuff();
+  try {
+    const data = await the_templator({
+      in_dir: join(process.cwd(), "template", "json", "auth"),
+      out_dir: join(process.cwd(), "trash"),
+      vars: { fancy: "project-name" },
+    });
 
-function witherror(): string {
-  throw new Error("OOpsie");
+    console.log("Data: ", data);
+
+    if (auto_delete) {
+      delete_stuff();
+    }
+  } catch (error) {
+    console.log("error:", error);
+  }
+
+  //   Result.fromExecution(() =>
+  //   rmSync(join(process.cwd(), "trash"), { force: false, recursive: true })
+  // );
 }
 
 main();

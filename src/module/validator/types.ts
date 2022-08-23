@@ -25,13 +25,15 @@ const out_dir_schema = z
   })
   .min(1);
 
-const vars_schema = z
+const vars = z
   .record(z.string(), z.string(), {
     invalid_type_error: invalid_vars_type,
   })
-  .default({})
-  .optional();
+  .default({});
 
+const vars_schema = vars.optional();
+
+export type Vars = z.infer<typeof vars>;
 export type Vars_Schema = z.infer<typeof vars_schema>;
 
 const number_curlies_schema = z

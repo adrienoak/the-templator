@@ -23,7 +23,8 @@
   },
   "scripts": {
     "test": "vitest",
-    "build": "tsup"
+    "build": "tsup",
+    "dev": "tsx watch src/index.ts auto_delete"
   },
   "author": "",
   "license": "ISC",
@@ -34,6 +35,7 @@
     "fast-check": "^3.1.1",
     "mock-fs": "^5.1.4",
     "tsup": "^6.2.1",
+    "tsx": "^3.8.2",
     "typescript": "^4.7.4",
     "vite": "^3.0.4",
     "vitest": "^0.21.0"
@@ -42,7 +44,7 @@
     "@swan-io/boxed": "^0.11.1",
     "get-all-files-in-path": "^1.0.4",
     "get-all-folders": "^1.1.0",
-    "string-template-parse": "^0.0.0",
+    "string-template-parse": "^0.1.0",
     "zod": "^3.18.0"
   },
   "description": ""

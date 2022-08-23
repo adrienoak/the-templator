@@ -9,8 +9,9 @@ specifiers:
   get-all-files-in-path: ^1.0.4
   get-all-folders: ^1.1.0
   mock-fs: ^5.1.4
-  string-template-parse: ^0.0.0
+  string-template-parse: ^0.1.0
   tsup: ^6.2.1
+  tsx: ^3.8.2
   typescript: ^4.7.4
   vite: ^3.0.4
   vitest: ^0.21.0
@@ -20,7 +21,7 @@ dependencies:
   '@swan-io/boxed': 0.11.1
   get-all-files-in-path: 1.0.4
   get-all-folders: 1.1.0
-  string-template-parse: 0.0.0
+  string-template-parse: 0.1.0
   zod: 3.18.0
 
 devDependencies:
@@ -30,6 +31,7 @@ devDependencies:
   fast-check: 3.1.1
   mock-fs: 5.1.4
   tsup: 6.2.2_typescript@4.7.4
+  tsx: 3.8.2
   typescript: 4.7.4
   vite: 3.0.8
   vitest: 0.21.1_c8@7.12.0
@@ -38,6 +40,27 @@ packages:
 
   /@bcoe/v8-coverage/0.2.3:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
+    dev: true
+
+  /@esbuild-kit/cjs-loader/2.3.3:
+    resolution: {integrity: sha512-Rt4O1mXlPEDVxvjsHLgbtHVdUXYK9C1/6ThpQnt7FaXIjUOsI6qhHYMgALhNnlIMZffag44lXd6Dqgx3xALbpQ==}
+    dependencies:
+      '@esbuild-kit/core-utils': 2.3.0
+      get-tsconfig: 4.2.0
+    dev: true
+
+  /@esbuild-kit/core-utils/2.3.0:
+    resolution: {integrity: sha512-JL73zt/LN/qqziHuod4/bM2xBNNofDZu1cbwT6KIn6B11lA4cgDXkoSHOfNCbZMZOnh0Aqf0vW/gNQC+Z18hKQ==}
+    dependencies:
+      esbuild: 0.15.5
+      source-map-support: 0.5.21
+    dev: true
+
+  /@esbuild-kit/esm-loader/2.4.2:
+    resolution: {integrity: sha512-N9dPKAj8WOx6djVnStgILWXip4fjDcBk9L7azO0/uQDpu8Ee0eaL78mkN4Acid9BzvNAKWwdYXFJZnsVahNEew==}
+    dependencies:
+      '@esbuild-kit/core-utils': 2.3.0
+      get-tsconfig: 4.2.0
     dev: true
 
   /@esbuild/linux-loong64/0.14.54:
@@ -198,6 +221,10 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       fill-range: 7.0.1
+    dev: true
+
+  /buffer-from/1.1.2:
+    resolution: {integrity: sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==}
     dev: true
 
   /bundle-require/3.0.4_esbuild@0.15.5:
@@ -865,6 +892,10 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
+  /get-tsconfig/4.2.0:
+    resolution: {integrity: sha512-X8u8fREiYOE6S8hLbq99PeykTDoLVnxvF4DjWKJmz9xy2nNRdUcV8ZN9tniJFeKyTU3qnC9lL8n4Chd6LmVKHg==}
+    dev: true
+
   /glob-parent/5.1.2:
     resolution: {integrity: sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow==}
     engines: {node: '>= 6'}
@@ -1331,6 +1362,18 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
+  /source-map-support/0.5.21:
+    resolution: {integrity: sha512-uBHU3L3czsIyYXKX88fdrGovxdSCoTGDRZ6SYXtSRxLZUzHg5P/66Ht6uoUlHu9EZod+inXhKo3qQgwXUT/y1w==}
+    dependencies:
+      buffer-from: 1.1.2
+      source-map: 0.6.1
+    dev: true
+
+  /source-map/0.6.1:
+    resolution: {integrity: sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==}
+    engines: {node: '>=0.10.0'}
+    dev: true
+
   /source-map/0.8.0-beta.0:
     resolution: {integrity: sha512-2ymg6oRBpebeZi9UUNsgQ89bhx01TcTkmNTGnNO88imTmbSgy4nfujrgVEFKWpMTEGA11EDkTt7mqObTPdigIA==}
     engines: {node: '>= 8'}
@@ -1338,8 +1381,8 @@ packages:
       whatwg-url: 7.1.0
     dev: true
 
-  /string-template-parse/0.0.0:
-    resolution: {integrity: sha512-N4ZLDLQFjRfvG+ylxP2fa5frGDWVbIVtYiPt0i5fgSQy/6AswJ2tEeEk+kPQwOgcxarDFae1upTVctfeaAFkcg==}
+  /string-template-parse/0.1.0:
+    resolution: {integrity: sha512-NWbfjJMCAW5vBlYGUew1dn8QqznVCmQiZ1xaoC48R9AiyPtVaYXSAbH+yQcZwLD1dlXy+iR1hj+6CEZBMmuUFg==}
     dependencies:
       glob: 8.0.3
     dev: false
@@ -1478,6 +1521,17 @@ packages:
     transitivePeerDependencies:
       - supports-color
       - ts-node
+    dev: true
+
+  /tsx/3.8.2:
+    resolution: {integrity: sha512-Jf9izq3Youry5aEarspf6Gm+v/IE2A2xP7YVhtNH1VSCpM0jjACg7C3oD5rIoLBfXWGJSZj4KKC2bwE0TgLb2Q==}
+    hasBin: true
+    dependencies:
+      '@esbuild-kit/cjs-loader': 2.3.3
+      '@esbuild-kit/core-utils': 2.3.0
+      '@esbuild-kit/esm-loader': 2.4.2
+    optionalDependencies:
+      fsevents: 2.3.2
     dev: true
 
   /type-detect/4.0.8:
