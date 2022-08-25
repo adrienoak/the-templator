@@ -1,7 +1,7 @@
 import { Result } from "@swan-io/boxed";
 import { read_file } from "../module/fs";
 import { I_The_Templator, Vars_Schema, validator } from "../module/validator";
-import { create_file_sync, create_folder, create_file } from "../pkg/create";
+import { create_folder, create_file } from "../pkg/create";
 import { get_all_files, get_all_folders } from "../pkg/get";
 
 async function the_templator(
@@ -22,31 +22,36 @@ async function the_templator(
   number_arg?: number,
   dry_run_option = false
 ): Promise<string[]> {
-  const validated_args = validator(value, out_dir_arg, vars_arg, number_arg);
+  const validated_args = validator(
+    value,
+    out_dir_arg,
+    vars_arg,
+    number_arg
+  ).match({
+    Error(error) {
+      if (typeof error === "string") {
+        throw new Error(error);
+      }
 
-  if (validated_args.isError()) {
-    const err = validated_args.getError();
+      throw error;
+    },
+    Ok: (v) => v,
+  });
 
-    if (typeof err === "string") {
-      throw new Error(err);
-    }
-    throw err;
-  }
-
-  const { in_dir, out_dir, number, vars } = validated_args.get();
+  const { in_dir, out_dir, number, vars = {} } = validated_args;
 
   const folders_result = await get_all_folders(in_dir);
 
-  if (folders_result.isError()) {
-    const err = folders_result.getError();
-    if (typeof err === "string") {
-      throw new Error(err);
-    }
+  const folders = folders_result.match({
+    Error(err) {
+      if (typeof err === "string") {
+        throw new Error(err);
+      }
 
-    throw err;
-  }
-
-  const folders = folders_result.get();
+      throw err;
+    },
+    Ok: (v) => v,
+  });
 
   const create_folder_results = await Promise.all(
     folders.map((folder) =>
@@ -61,50 +66,47 @@ async function the_templator(
 
   if (create_folders_is_success.isError()) {
     const err = create_folders_is_success.getError();
+
     throw err;
   }
 
   const files_result = await get_all_files(in_dir);
 
-  if (files_result.isError()) {
-    const err = files_result.getError();
-    throw err;
-  }
-
-  const files = files_result.get();
+  const files = files_result.match({
+    Error(error) {
+      throw error;
+    },
+    Ok: (v) => v,
+  });
 
   const create_files_result = await Promise.all(
     files.map(async (file) => {
       const content = await read_file(file);
 
-      if (content.isError()) {
-        return content;
-      }
-
-      return create_file(
-        {
-          content: content.get(),
-          base_dir: in_dir,
-          out_dir,
-          vars,
-          in_dir: file,
-          number,
+      return content.match({
+        Error(error) {
+          return Promise.resolve(Result.Error(error));
         },
-        { dry_run_option }
-      );
+        Ok(content) {
+          return create_file({
+            content,
+            out_dir,
+            base_dir: in_dir,
+            vars,
+            number,
+            in_dir: file,
+          });
+        },
+      });
     })
   );
 
-  const create_files_is_success = Result.all(create_files_result);
-
-  if (create_files_is_success.isError()) {
-    const err = create_files_is_success.getError();
-    throw err;
-  }
-
-  const file_names = create_files_is_success.get();
-
-  return file_names;
+  return Result.all(create_files_result).match({
+    Error(error) {
+      throw error;
+    },
+    Ok: (v) => v,
+  });
 }
 
 export { the_templator };

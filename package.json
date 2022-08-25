@@ -47,5 +47,14 @@
     "string-template-parse": "^0.1.0",
     "zod": "^3.18.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/adrienoak/the-templator.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/adrienoak/the-templator/issues"
+  },
+  "homepage": "https://github.com/adrienoak/the-templator#readme",
   "description": ""
 }

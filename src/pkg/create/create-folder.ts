@@ -43,6 +43,7 @@ export async function create_folder(
 
   if (!dry_run_option) {
     const result = await make_dir_func(new_folder_path);
+
     if (result.isError()) {
       return result;
     }
