@@ -14,6 +14,7 @@ describe("main_validator", () => {
       out_dir: "something_else",
     };
     const result = validator(args);
+    console.log("result:", result);
 
     assert(result.isOk());
 

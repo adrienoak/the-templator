@@ -1,6 +1,11 @@
 import { Result } from "@swan-io/boxed";
 import { read_file_sync } from "../module/fs";
-import { I_The_Templator, validator, Vars_Schema } from "../module/validator";
+import {
+  I_The_Templator,
+  make_is_dry_run_option,
+  validator,
+  Vars_Schema,
+} from "../module/validator";
 import { create_file_sync, create_folder_sync } from "../pkg/create";
 import { get_all_files_sync, get_all_folders_sync } from "../pkg/get";
 
@@ -40,6 +45,8 @@ function the_templator_sync(
 
   const { in_dir, out_dir, number, vars = {} } = validated_args;
 
+  const is_run_option = make_is_dry_run_option(out_dir_arg, dry_run_option);
+
   const folders = get_all_folders_sync(in_dir).match({
     Error(error) {
       if (typeof error === "string") {
@@ -54,7 +61,7 @@ function the_templator_sync(
   const create_folder_results = folders.map((folder) =>
     create_folder_sync(
       { base_dir: in_dir, in_dir: folder, out_dir, vars, number },
-      { dry_run_option }
+      { dry_run_option: is_run_option }
     )
   );
 

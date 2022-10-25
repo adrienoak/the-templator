@@ -1,6 +1,11 @@
 import { Result } from "@swan-io/boxed";
 import { read_file } from "../module/fs";
-import { I_The_Templator, Vars_Schema, validator } from "../module/validator";
+import {
+  I_The_Templator,
+  Vars_Schema,
+  validator,
+  make_is_dry_run_option,
+} from "../module/validator";
 import { create_folder, create_file } from "../pkg/create";
 import { get_all_files, get_all_folders } from "../pkg/get";
 
@@ -39,6 +44,7 @@ async function the_templator(
   });
 
   const { in_dir, out_dir, number, vars = {} } = validated_args;
+  const is_dry_run = make_is_dry_run_option(out_dir_arg, dry_run_option);
 
   const folders_result = await get_all_folders(in_dir);
 
@@ -57,7 +63,7 @@ async function the_templator(
     folders.map((folder) =>
       create_folder(
         { base_dir: in_dir, in_dir: folder, out_dir, vars, number },
-        { dry_run_option }
+        { dry_run_option: is_dry_run }
       )
     )
   );
