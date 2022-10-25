@@ -55,7 +55,6 @@ export async function create_file(
     );
 
     if (result.isError()) {
-      console.log("new_file_path:", new_file_path);
       return result as unknown as Result<string, unknown>;
     }
   }
