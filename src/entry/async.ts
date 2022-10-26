@@ -94,21 +94,27 @@ async function the_templator(
           return Promise.resolve(Result.Error(error));
         },
         Ok(content) {
-          return create_file({
-            content,
-            out_dir,
-            base_dir: in_dir,
-            vars,
-            number,
-            in_dir: file,
-          });
+          return create_file(
+            {
+              content,
+              out_dir,
+              base_dir: in_dir,
+              vars,
+              number,
+              in_dir: file,
+            },
+            { dry_run_option: is_dry_run }
+          );
         },
       });
     })
   );
 
+  console.log("HERE");
+
   return Result.all(create_files_result).match({
     Error(error) {
+      console.log("error:", error);
       throw error;
     },
     Ok: (v) => v,

@@ -1,7 +1,7 @@
 import { Result } from "@swan-io/boxed";
 import { rmSync } from "node:fs";
 import { join } from "node:path";
-import { the_templator_sync } from "../src";
+import { the_templator } from "../src";
 
 const auto_delete =
   process.argv.length === 3 && process.argv[2] === "auto_delete";
@@ -15,10 +15,10 @@ function delete_stuff() {
 async function main() {
   delete_stuff();
   try {
-    const data = await the_templator_sync({
-      in_dir: join(process.cwd(), "template", "json", "auth"),
+    const data = await the_templator({
+      in_dir: join(process.cwd(), "template", "views", "auth"),
       out_dir: join(process.cwd(), "trash"),
-      vars: { fancy: "project-name" },
+      vars: { name: "project-name" },
     });
 
     console.log("Data: ", data);
@@ -28,6 +28,7 @@ async function main() {
     }
   } catch (error) {
     console.log("error:", error);
+    console.log("error data: ", (error as Error).stack);
   }
 }
 
