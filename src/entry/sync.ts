@@ -45,9 +45,11 @@ function the_templator_sync(
 
   const { in_dir, out_dir, number, vars = {} } = validated_args;
 
-  const is_run_option = make_is_dry_run_option(out_dir_arg, dry_run_option);
+  const is_dry_run = make_is_dry_run_option(out_dir_arg, dry_run_option);
 
-  const folders = get_all_folders_sync(in_dir).match({
+  const folders_result = get_all_folders_sync(in_dir);
+
+  const folders = folders_result.match({
     Error(error) {
       if (typeof error === "string") {
         throw new Error(error);
@@ -58,10 +60,21 @@ function the_templator_sync(
     Ok: (v) => v,
   });
 
+  // const folders = get_all_folders_sync(in_dir).match({
+  //   Error(error) {
+  //     if (typeof error === "string") {
+  //       throw new Error(error);
+  //     }
+
+  //     throw error;
+  //   },
+  //   Ok: (v) => v,
+  // });
+
   const create_folder_results = folders.map((folder) =>
     create_folder_sync(
       { base_dir: in_dir, in_dir: folder, out_dir, vars, number },
-      { dry_run_option: is_run_option }
+      { dry_run_option: is_dry_run }
     )
   );
 
@@ -73,36 +86,68 @@ function the_templator_sync(
     throw err;
   }
 
-  const files = get_all_files_sync(in_dir)
-    .match({
-      Error(error) {
-        throw error;
-      },
-      Ok: (v) => v,
-    })
-    .map((file) => {
-      const content = read_file_sync(file);
+  const files_result = get_all_files_sync(in_dir);
 
-      return content.match({
-        Error(error) {
-          return Result.Error(error);
-        },
-        Ok(content) {
-          return create_file_sync({
-            content,
-            out_dir,
-            base_dir: in_dir,
-            number,
-            vars,
-            in_dir: file,
-          });
-        },
-      });
-    });
-
-  return Result.all(files).match({
+  const files = files_result.match({
     Error(error) {
       throw error;
+    },
+    Ok: (v) => v,
+  });
+
+  const create_files_result = files.map((file) => {
+    const content = read_file_sync(file);
+
+    return content.match({
+      Error(error) {
+        return Result.Error(error);
+      },
+      Ok(content) {
+        return create_file_sync(
+          {
+            content,
+            in_dir: file,
+            base_dir: in_dir,
+            vars,
+            number,
+            out_dir,
+          },
+          { dry_run_option: is_dry_run }
+        );
+      },
+    });
+  });
+
+  // const files = get_all_files_sync(in_dir)
+  //   .match({
+  //     Error(error) {
+  //       throw error;
+  //     },
+  //     Ok: (v) => v,
+  //   })
+  //   .map((file) => {
+  //     const content = read_file_sync(file);
+
+  //     return content.match({
+  //       Error(error) {
+  //         return Result.Error(error);
+  //       },
+  //       Ok(content) {
+  //         return create_file_sync({
+  //           content,
+  //           out_dir,
+  //           base_dir: in_dir,
+  //           number,
+  //           vars,
+  //           in_dir: file,
+  //         });
+  //       },
+  //     });
+  //   });
+
+  return Result.all(create_files_result).match({
+    Error(error): any {
+      // throw error;
     },
     Ok(value) {
       return value;
