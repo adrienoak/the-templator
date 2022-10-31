@@ -15,11 +15,14 @@ function delete_stuff() {
 async function main() {
   delete_stuff();
   try {
-    const data = the_templator_sync({
-      in_dir: join(process.cwd(), "template", "views", "auth"),
-      out_dir: join(process.cwd(), "trash", "test"),
-      vars: { name: "project" },
-    });
+    const data = the_templator_sync(
+      {
+        in_dir: join(process.cwd(), "template", "views", "auth"),
+        out_dir: join(process.cwd(), "trash", "test"),
+        vars: { name: "project" },
+      },
+      true
+    );
 
     console.log("Data: ", data);
 
