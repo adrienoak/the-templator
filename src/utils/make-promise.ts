@@ -1,3 +1,5 @@
+import { Option } from "@swan-io/boxed";
+
 type Func<T> = (...args: any) => T;
 export function make_promise<T>(
   func: (...args: any) => T | Promise<T>
