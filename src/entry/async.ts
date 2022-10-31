@@ -2,11 +2,11 @@ import { Result } from "@swan-io/boxed";
 import { read_file } from "../module/fs";
 import {
   I_The_Templator,
-  Vars_Schema,
-  validator,
   make_is_dry_run_option,
+  validator,
+  Vars_Schema,
 } from "../module/validator";
-import { create_folder, create_file } from "../pkg/create";
+import { create_file, create_folder_2 } from "../pkg/create";
 import { get_all_files, get_all_folders } from "../pkg/get";
 
 async function the_templator(
@@ -61,10 +61,14 @@ async function the_templator(
 
   const create_folder_results = await Promise.all(
     folders.map((folder) =>
-      create_folder(
-        { base_dir: in_dir, in_dir: folder, out_dir, vars, number },
-        { dry_run_option: is_dry_run }
-      )
+      create_folder_2({
+        base_dir: in_dir,
+        in_dir: folder,
+        out_dir,
+        vars,
+        number,
+        dry_run: is_dry_run,
+      })
     )
   );
 
@@ -94,23 +98,19 @@ async function the_templator(
           return Promise.resolve(Result.Error(error));
         },
         Ok(content) {
-          return create_file(
-            {
-              content,
-              out_dir,
-              base_dir: in_dir,
-              vars,
-              number,
-              in_dir: file,
-            },
-            { dry_run_option: is_dry_run }
-          );
+          return create_file({
+            content,
+            out_dir,
+            base_dir: in_dir,
+            vars,
+            number,
+            in_dir: file,
+            dry_run: is_dry_run,
+          });
         },
       });
     })
   );
-
-  console.log("HERE");
 
   return Result.all(create_files_result).match({
     Error(error) {

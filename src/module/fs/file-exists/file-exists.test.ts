@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import { join } from "node:path";
 import mockFS from "mock-fs";
-import { make_file_exists, file_exists } from "./file-exists";
+import { file_exists } from "./index";
+import { make_file_exists } from "./file-exists";
 
 const base_path = process.cwd();
 

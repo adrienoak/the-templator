@@ -1,14 +1,6 @@
 import { Result } from "@swan-io/boxed";
-import type { PathLike } from "node:fs";
 import { existsSync } from "node:fs";
-
-export type File_Exists = (path: PathLike) => boolean;
-
-export type OnFileExists = (path: PathLike, exists: boolean) => void;
-
-export type IMakeFileExists = (
-  file_exists_func?: File_Exists
-) => (path: PathLike, on_file_exists?: OnFileExists) => boolean;
+import type { IMakeFileExists } from "./file-exists.types";
 
 export const make_file_exists: IMakeFileExists = (
   file_exists_func = existsSync
@@ -25,5 +17,3 @@ export const make_file_exists: IMakeFileExists = (
     return result;
   };
 };
-
-export const file_exists = make_file_exists();

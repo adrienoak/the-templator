@@ -8,7 +8,7 @@ import {
   it,
   vi,
 } from "vitest";
-import { Vars } from "../../module/validator";
+import { Vars } from "../../../module/validator";
 import { join } from "node:path";
 import { create_folder, create_folder_sync } from "./create-folder";
 

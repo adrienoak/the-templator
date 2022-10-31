@@ -6,7 +6,7 @@ import {
   validator,
   Vars_Schema,
 } from "../module/validator";
-import { create_file_sync, create_folder_sync } from "../pkg/create";
+import { create_file_sync, create_folder_sync_2 } from "../pkg/create";
 import { get_all_files_sync, get_all_folders_sync } from "../pkg/get";
 
 function the_templator_sync(
@@ -72,10 +72,14 @@ function the_templator_sync(
   // });
 
   const create_folder_results = folders.map((folder) =>
-    create_folder_sync(
-      { base_dir: in_dir, in_dir: folder, out_dir, vars, number },
-      { dry_run_option: is_dry_run }
-    )
+    create_folder_sync_2({
+      base_dir: in_dir,
+      in_dir: folder,
+      out_dir,
+      vars,
+      number,
+      dry_run: is_dry_run,
+    })
   );
 
   const create_folders_is_success = Result.all(create_folder_results);
@@ -103,17 +107,15 @@ function the_templator_sync(
         return Result.Error(error);
       },
       Ok(content) {
-        return create_file_sync(
-          {
-            content,
-            in_dir: file,
-            base_dir: in_dir,
-            vars,
-            number,
-            out_dir,
-          },
-          { dry_run_option: is_dry_run }
-        );
+        return create_file_sync({
+          content,
+          in_dir: file,
+          base_dir: in_dir,
+          vars,
+          number,
+          out_dir,
+          dry_run: is_dry_run,
+        });
       },
     });
   });

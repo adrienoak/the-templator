@@ -1,7 +1,7 @@
 import { Result } from "@swan-io/boxed";
 import { rmSync } from "node:fs";
 import { join } from "node:path";
-import { the_templator, the_templator_sync } from "../src";
+import { the_templator_sync } from "../src";
 
 const auto_delete =
   process.argv.length === 3 && process.argv[2] === "auto_delete";
@@ -17,8 +17,8 @@ async function main() {
   try {
     const data = the_templator_sync({
       in_dir: join(process.cwd(), "template", "views", "auth"),
-      out_dir: join(process.cwd(), "trash"),
-      vars: { name: "project-name" },
+      out_dir: join(process.cwd(), "trash", "test"),
+      vars: { name: "project" },
     });
 
     console.log("Data: ", data);

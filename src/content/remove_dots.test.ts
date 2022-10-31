@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { remove_dots } from "./remove_dot";
-import { join } from "node:path";
 
 describe("remove_dots", () => {
   it("does not remove underscore from the middle", () => {
