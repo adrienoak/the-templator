@@ -48,11 +48,27 @@ const number_curlies_schema = z
   .default(2)
   .optional();
 
-export const the_templator_object_schema = z.object({
+const dry_run_schema = z.boolean().optional().default(false);
+
+const object_schema = {
   in_dir: in_dir_schema,
   out_dir: out_dir_schema,
   vars: vars_schema,
   number: number_curlies_schema,
+  dry_run: dry_run_schema.optional(),
+} as const;
+
+const the_templator = {
+  ...object_schema,
+  dry_run: dry_run_schema,
+};
+
+export const the_templator_object_schema = z.object({ ...object_schema });
+
+export const the_templator_schema = z.object({
+  ...the_templator,
 });
+
+export type ITemplator = z.TypeOf<typeof the_templator_schema>;
 
 export type I_The_Templator = z.infer<typeof the_templator_object_schema>;

@@ -1,38 +1,16 @@
 import { Result } from "@swan-io/boxed";
 import { read_file } from "../module/fs";
-import {
-  I_The_Templator,
-  make_is_dry_run_option,
-  validator,
-  Vars_Schema,
-} from "../module/validator";
-import { create_file, create_folder_2 } from "../pkg/create";
+import { I_The_Templator } from "../module/validator";
+import { validator_of_args } from "../module/validator/arg-validator";
+import { create_file, create_folder } from "../pkg/create";
 import { get_all_files, get_all_folders } from "../pkg/get";
+import { ITemplatorHooks } from "../types/hooks.types";
 
-async function the_templator(
+export async function the_templator(
   options: I_The_Templator,
-  dry_run_option?: boolean
-): Promise<string[]>;
-async function the_templator(
-  in_dir: string,
-  out_dir: string,
-  vars?: Vars_Schema,
-  number?: number,
-  dry_run_option?: boolean
-): Promise<string[]>;
-async function the_templator(
-  value: I_The_Templator | string,
-  out_dir_arg?: boolean | string,
-  vars_arg?: Vars_Schema,
-  number_arg?: number,
-  dry_run_option = false
+  hooks: ITemplatorHooks = {}
 ): Promise<string[]> {
-  const validated_args = validator(
-    value,
-    out_dir_arg,
-    vars_arg,
-    number_arg
-  ).match({
+  const validate_args = validator_of_args(options).match({
     Error(error) {
       if (typeof error === "string") {
         throw new Error(error);
@@ -43,8 +21,7 @@ async function the_templator(
     Ok: (v) => v,
   });
 
-  const { in_dir, out_dir, number, vars = {} } = validated_args;
-  const is_dry_run = make_is_dry_run_option(out_dir_arg, dry_run_option);
+  const { dry_run, in_dir, out_dir, number, vars = {} } = validate_args;
 
   const folders_result = await get_all_folders(in_dir);
 
@@ -61,13 +38,13 @@ async function the_templator(
 
   const create_folder_results = await Promise.all(
     folders.map((folder) =>
-      create_folder_2({
+      create_folder({
         base_dir: in_dir,
         in_dir: folder,
         out_dir,
         vars,
         number,
-        dry_run: is_dry_run,
+        dry_run,
       })
     )
   );
@@ -91,7 +68,7 @@ async function the_templator(
 
   const create_files_result = await Promise.all(
     files.map(async (file) => {
-      const content = await read_file(file);
+      const content = await read_file(file, hooks?.on_read_file);
 
       return content.match({
         Error(error) {
@@ -105,7 +82,7 @@ async function the_templator(
             vars,
             number,
             in_dir: file,
-            dry_run: is_dry_run,
+            dry_run,
           });
         },
       });
@@ -120,5 +97,3 @@ async function the_templator(
     Ok: (v) => v,
   });
 }
-
-export { the_templator };

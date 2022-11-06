@@ -1,5 +1,15 @@
-import { I_The_Templator, Vars_Schema } from "./types";
-import { validate_args } from "./arg-validator";
+import {
+  ITemplator,
+  I_The_Templator,
+  the_templator_object_schema,
+  the_templator_schema,
+  Vars_Schema,
+} from "./types";
+import { validate_args, validator_of_args } from "./arg-validator";
+
+export function validate(value: I_The_Templator) {
+  return validator_of_args(value);
+}
 
 export function validator(
   value: I_The_Templator | string,
