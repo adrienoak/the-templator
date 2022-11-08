@@ -6,8 +6,9 @@ import { IMakeDir, IMakeDirSync } from "./make-directory.types";
 export const make_mkdir: IMakeDir.Func = (
   make_dir_func = mkdir as IMakeDir.MakeDirFunc
 ) => {
-  return async ({ path, dry_run = false, on_mkdir }) => {
-    const on_result = () => (on_mkdir ? on_mkdir({ path, dry_run }) : () => {});
+  return async ({ path, dry_run = false }, on_mkdir_hook) => {
+    const on_result = () =>
+      on_mkdir_hook ? on_mkdir_hook({ path, dry_run }) : () => {};
 
     if (!dry_run) {
       const written_result = await Result.fromPromise(
@@ -28,8 +29,9 @@ export const make_mkdir: IMakeDir.Func = (
 export const make_mkdir_sync: IMakeDirSync.Func = (
   make_dir_func = mkdirSync as IMakeDirSync.MakeDirFunc
 ) => {
-  return ({ path, dry_run = false, on_mkdir }) => {
-    const on_result = () => (on_mkdir ? on_mkdir({ path, dry_run }) : () => {});
+  return ({ path, dry_run = false }, on_mkdir_hook) => {
+    const on_result = () =>
+      on_mkdir_hook ? on_mkdir_hook({ path, dry_run }) : () => {};
 
     if (!dry_run) {
       const written_result = Result.fromExecution(() =>

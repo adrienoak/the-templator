@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 
 type Encoding = Parameters<typeof readFile>[1];
 
-export type OnReadFile = (source: string) => void;
+export type OnReadFileHook = (source: string) => void;
 
 export namespace IReadFile {
   export type IReadFileFunc = (
@@ -13,7 +13,7 @@ export namespace IReadFile {
 
   export type Read = (
     source: string,
-    on_read_file?: OnReadFile
+    on_read_file?: OnReadFileHook
   ) => Promise<Result<string, unknown>>;
 
   export type Func = (read_file_func?: IReadFileFunc) => Read;
@@ -24,7 +24,7 @@ export namespace IReadFileSync {
 
   export type Read = (
     source: string,
-    on_read_file?: OnReadFile
+    on_read_file?: OnReadFileHook
   ) => Result<string, unknown>;
 
   export type Func = (read_file_func?: IReadFileFunc) => Read;

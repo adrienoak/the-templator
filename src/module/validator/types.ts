@@ -61,6 +61,8 @@ const object_schema = {
 const the_templator = {
   ...object_schema,
   dry_run: dry_run_schema,
+  number: number_curlies_schema.default(2),
+  vars: vars_schema.default({}),
 };
 
 export const the_templator_object_schema = z.object({ ...object_schema });

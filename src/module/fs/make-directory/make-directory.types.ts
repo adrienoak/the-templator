@@ -3,11 +3,10 @@ import { mkdirSync } from "node:fs";
 
 type Recursive = Parameters<typeof mkdirSync>[1];
 
-export type OnMkDir = (args: Omit<IMkDirArg, "on_mkdir">) => void;
+export type OnMkDirHook = (args: IMkDirArg) => void;
 
 type IMkDirArg = {
   path: string;
-  on_mkdir?: OnMkDir;
   dry_run?: boolean;
 };
 
@@ -18,7 +17,8 @@ export namespace IMakeDir {
   ) => Promise<string>;
 
   export type MkDir = (
-    mkdir_args: IMkDirArg
+    mkdir_args: IMkDirArg,
+    on_make_dir_hook?: OnMkDirHook
   ) => Promise<Result<string, unknown>>;
 
   export type Func = (make_dir_func?: MakeDirFunc) => MkDir;
@@ -27,7 +27,10 @@ export namespace IMakeDir {
 export namespace IMakeDirSync {
   export type MakeDirFunc = (path: string, options: Recursive) => string;
 
-  export type MkDir = (mkdir_args: IMkDirArg) => Result<string, unknown>;
+  export type MkDir = (
+    mkdir_args: IMkDirArg,
+    on_mkdir_hook?: OnMkDirHook
+  ) => Result<string, unknown>;
 
   export type Func = (make_dir_func?: MakeDirFunc) => MkDir;
 }

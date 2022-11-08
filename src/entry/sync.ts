@@ -1,17 +1,12 @@
 import { Result } from "@swan-io/boxed";
 import { read_file_sync } from "../module/fs";
-import {
-  I_The_Templator,
-  make_is_dry_run_option,
-  validator,
-  Vars_Schema,
-} from "../module/validator";
-import { validator_of_args } from "../module/validator/arg-validator";
+import { I_The_Templator } from "../module/validator";
+import { validator } from "../module/validator";
 import { create_file_sync, create_folder_sync } from "../pkg/create";
 import { get_all_files_sync, get_all_folders_sync } from "../pkg/get";
 
 function the_templator_sync(options: I_The_Templator): string[] {
-  const validated_args = validator_of_args(options).match({
+  const validated_args = validator(options).match({
     Error(error) {
       if (typeof error === "string") {
         throw new Error(error);

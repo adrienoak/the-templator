@@ -10,25 +10,29 @@ import {
 } from "vitest";
 import { Vars } from "../../../module/validator";
 import { join } from "node:path";
-import { create_folder, create_folder_sync } from "./create-folder";
+import { make_create_folder, make_create_folder_sync } from "./create-folder";
+import { make_new_path } from "../../../content";
 
 const cwd = process.cwd();
-describe("create-folder", () => {
-  beforeEach(() => {
-    mockFS();
-  });
 
-  afterEach(() => {
-    mockFS.restore();
-  });
+describe("make_create_folder", () => {
+  describe("mocking fs", () => {
+    beforeEach(() => {
+      mockFS();
+    });
 
-  describe("async", () => {
-    describe("dry_run_false", () => {
-      it("works with  nested values", async () => {
+    afterEach(() => {
+      mockFS.restore();
+    });
+
+    describe("with dry_run=false", () => {
+      it("works with nested values", async () => {
         const { base_dir, in_dir, out_dir, first_nested, second_nested, arg } =
           setup(false);
 
-        const new_path = await create_folder({
+        const func = make_create_folder();
+
+        const new_path = await func({
           base_dir,
           in_dir,
           out_dir,
@@ -38,6 +42,7 @@ describe("create-folder", () => {
         assert(new_path.isOk());
         expect(new_path.get()).toBe(join(out_dir, first_nested, second_nested));
       });
+
       it("works with  nested values and variables", async () => {
         const {
           base_dir,
@@ -49,7 +54,9 @@ describe("create-folder", () => {
           first_var,
         } = setup();
 
-        const new_path = await create_folder({
+        const func = make_create_folder();
+
+        const new_path = await func({
           base_dir,
           in_dir,
           out_dir,
@@ -61,9 +68,48 @@ describe("create-folder", () => {
           join(out_dir, first_nested, second_nested, first_var)
         );
       });
-    });
+      //
+      it("calls hook if it is passed", async () => {
+        const {
+          base_dir,
+          in_dir,
+          out_dir,
+          arg,
+          first_nested,
+          second_nested,
+          first_var,
+        } = setup();
 
-    describe("dry_run_true", () => {
+        const func = make_create_folder();
+
+        const mock_hook = vi.fn();
+
+        const new_path = await func(
+          {
+            base_dir,
+            in_dir,
+            out_dir,
+            vars: arg,
+          },
+          mock_hook
+        );
+
+        assert(new_path.isOk());
+        expect(new_path.get()).toBe(
+          join(out_dir, first_nested, second_nested, first_var)
+        );
+
+        expect(mock_hook).toHaveBeenCalledOnce();
+        expect(mock_hook).toHaveBeenCalledWith({
+          path: make_new_path({ base_dir, in_dir, out_dir, vars: arg }),
+          dry_run: false,
+        });
+      });
+      //
+    });
+    //
+
+    describe("with dry_run=false", () => {
       it("works with  nested values and variables", async () => {
         const {
           base_dir,
@@ -77,18 +123,14 @@ describe("create-folder", () => {
 
         const mock = vi.fn();
 
-        const new_path = await create_folder(
-          {
-            base_dir,
-            in_dir,
-            out_dir,
-            vars: arg,
-          },
-          {
-            dry_run_option: true,
-            make_dir_func: mock,
-          }
-        );
+        const func = make_create_folder(mock);
+        const new_path = await func({
+          base_dir,
+          in_dir,
+          out_dir,
+          vars: arg,
+          dry_run: true,
+        });
 
         assert(new_path.isOk());
         expect(new_path.get()).toBe(
@@ -98,14 +140,27 @@ describe("create-folder", () => {
       });
     });
   });
+  //
+});
 
-  describe("sync", () => {
-    describe("dry_run_false", () => {
-      it("works with  nested values", () => {
+describe("make_create_folder_sync", () => {
+  describe("mocking fs", () => {
+    beforeEach(() => {
+      mockFS();
+    });
+
+    afterEach(() => {
+      mockFS.restore();
+    });
+
+    describe("with dry_run=false", () => {
+      it("works with nested values", () => {
         const { base_dir, in_dir, out_dir, first_nested, second_nested, arg } =
           setup(false);
 
-        const new_path = create_folder_sync({
+        const func = make_create_folder_sync();
+
+        const new_path = func({
           base_dir,
           in_dir,
           out_dir,
@@ -115,6 +170,7 @@ describe("create-folder", () => {
         assert(new_path.isOk());
         expect(new_path.get()).toBe(join(out_dir, first_nested, second_nested));
       });
+
       it("works with  nested values and variables", () => {
         const {
           base_dir,
@@ -126,7 +182,9 @@ describe("create-folder", () => {
           first_var,
         } = setup();
 
-        const new_path = create_folder_sync({
+        const func = make_create_folder_sync();
+
+        const new_path = func({
           base_dir,
           in_dir,
           out_dir,
@@ -138,9 +196,48 @@ describe("create-folder", () => {
           join(out_dir, first_nested, second_nested, first_var)
         );
       });
-    });
+      //
+      it("calls hook if it is passed", () => {
+        const {
+          base_dir,
+          in_dir,
+          out_dir,
+          arg,
+          first_nested,
+          second_nested,
+          first_var,
+        } = setup();
 
-    describe("dry_run_true", () => {
+        const func = make_create_folder_sync();
+
+        const mock_hook = vi.fn();
+
+        const new_path = func(
+          {
+            base_dir,
+            in_dir,
+            out_dir,
+            vars: arg,
+          },
+          mock_hook
+        );
+
+        assert(new_path.isOk());
+        expect(new_path.get()).toBe(
+          join(out_dir, first_nested, second_nested, first_var)
+        );
+
+        expect(mock_hook).toHaveBeenCalledOnce();
+        expect(mock_hook).toHaveBeenCalledWith({
+          path: make_new_path({ base_dir, in_dir, out_dir, vars: arg }),
+          dry_run: false,
+        });
+      });
+      //
+    });
+    //
+
+    describe("with dry_run=false", () => {
       it("works with  nested values and variables", () => {
         const {
           base_dir,
@@ -154,18 +251,14 @@ describe("create-folder", () => {
 
         const mock = vi.fn();
 
-        const new_path = create_folder_sync(
-          {
-            base_dir,
-            in_dir,
-            out_dir,
-            vars: arg,
-          },
-          {
-            dry_run_option: true,
-            make_dir_func: mock,
-          }
-        );
+        const func = make_create_folder_sync(mock);
+        const new_path = func({
+          base_dir,
+          in_dir,
+          out_dir,
+          vars: arg,
+          dry_run: true,
+        });
 
         assert(new_path.isOk());
         expect(new_path.get()).toBe(
@@ -175,6 +268,7 @@ describe("create-folder", () => {
       });
     });
   });
+  //
 });
 
 function setup(with_var = true) {

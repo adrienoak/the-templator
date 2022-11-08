@@ -1,7 +1,7 @@
 import { Result } from "@swan-io/boxed";
 import { read_file } from "../module/fs";
 import { I_The_Templator } from "../module/validator";
-import { validator_of_args } from "../module/validator/arg-validator";
+import { validator } from "../module/validator";
 import { create_file, create_folder } from "../pkg/create";
 import { get_all_files, get_all_folders } from "../pkg/get";
 import { ITemplatorHooks } from "../types/hooks.types";
@@ -10,7 +10,7 @@ export async function the_templator(
   options: I_The_Templator,
   hooks: ITemplatorHooks = {}
 ): Promise<string[]> {
-  const validate_args = validator_of_args(options).match({
+  const validate_args = validator(options, hooks?.on_file_exists).match({
     Error(error) {
       if (typeof error === "string") {
         throw new Error(error);
@@ -38,14 +38,17 @@ export async function the_templator(
 
   const create_folder_results = await Promise.all(
     folders.map((folder) =>
-      create_folder({
-        base_dir: in_dir,
-        in_dir: folder,
-        out_dir,
-        vars,
-        number,
-        dry_run,
-      })
+      create_folder(
+        {
+          base_dir: in_dir,
+          in_dir: folder,
+          out_dir,
+          vars,
+          number,
+          dry_run,
+        },
+        hooks?.on_mkdir
+      )
     )
   );
 
@@ -75,15 +78,18 @@ export async function the_templator(
           return Promise.resolve(Result.Error(error));
         },
         Ok(content) {
-          return create_file({
-            content,
-            out_dir,
-            base_dir: in_dir,
-            vars,
-            number,
-            in_dir: file,
-            dry_run,
-          });
+          return create_file(
+            {
+              content,
+              out_dir,
+              base_dir: in_dir,
+              vars,
+              number,
+              in_dir: file,
+              dry_run,
+            },
+            { on_mkdir: hooks?.on_mkdir, on_write_file: hooks?.on_write_file }
+          );
         },
       });
     })

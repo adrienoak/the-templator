@@ -97,7 +97,7 @@ describe("make_mkdir", () => {
         const mock_func = vi.fn();
 
         const func = make_mkdir();
-        const result = await func({ path, on_mkdir: mock_func });
+        const result = await func({ path }, mock_func);
 
         const after_mkdir = calc_path_existing(path);
 
@@ -127,7 +127,7 @@ describe("make_mkdir", () => {
         const mock_func = vi.fn();
 
         const func = make_mkdir();
-        const result = await func({ path, on_mkdir: mock_func, dry_run: true });
+        const result = await func({ path, dry_run: true }, mock_func);
 
         const after_mkdir = calc_path_existing(path);
 
@@ -218,11 +218,13 @@ describe("make_mkdir", () => {
         );
 
         const func = make_mkdir(mock_mkdir);
-        const result = await func({
-          path,
-          dry_run: true,
-          on_mkdir: mock_on_mkdir,
-        });
+        const result = await func(
+          {
+            path,
+            dry_run: true,
+          },
+          mock_on_mkdir
+        );
 
         assert(result.isOk());
         expect(mock_mkdir).not.toHaveBeenCalled();
@@ -248,10 +250,12 @@ describe("make_mkdir", () => {
         );
 
         const func = make_mkdir(mock_mkdir);
-        const result = await func({
-          path,
-          on_mkdir: mock_on_mkdir,
-        });
+        const result = await func(
+          {
+            path,
+          },
+          mock_on_mkdir
+        );
 
         assert(result.isOk());
         expect(mock_mkdir).toHaveBeenCalled();
@@ -382,7 +386,7 @@ describe("make_mkdir", () => {
         const mock_func = vi.fn();
 
         const func = make_mkdir_sync();
-        const result = func({ path, on_mkdir: mock_func });
+        const result = func({ path }, mock_func);
 
         const after_mkdir = calc_path_existing(path);
 
@@ -412,7 +416,7 @@ describe("make_mkdir", () => {
         const mock_func = vi.fn();
 
         const func = make_mkdir_sync();
-        const result = func({ path, on_mkdir: mock_func, dry_run: true });
+        const result = func({ path, dry_run: true }, mock_func);
 
         const after_mkdir = calc_path_existing(path);
 
@@ -503,11 +507,13 @@ describe("make_mkdir", () => {
         );
 
         const func = make_mkdir_sync(mock_mkdir);
-        const result = func({
-          path,
-          dry_run: true,
-          on_mkdir: mock_on_mkdir,
-        });
+        const result = func(
+          {
+            path,
+            dry_run: true,
+          },
+          mock_on_mkdir
+        );
 
         assert(result.isOk());
         expect(mock_mkdir).not.toHaveBeenCalled();
@@ -533,10 +539,12 @@ describe("make_mkdir", () => {
         );
 
         const func = make_mkdir_sync(mock_mkdir);
-        const result = func({
-          path,
-          on_mkdir: mock_on_mkdir,
-        });
+        const result = func(
+          {
+            path,
+          },
+          mock_on_mkdir
+        );
 
         assert(result.isOk());
         expect(mock_mkdir).toHaveBeenCalled();

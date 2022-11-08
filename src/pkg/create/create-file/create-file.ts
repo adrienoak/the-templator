@@ -8,15 +8,10 @@ import { ICreateFile, ICreateFileSync } from "./create-file.types";
 export const make_create_file_sync: ICreateFileSync.Func = (
   create_file_func = write_file_sync
 ) => {
-  return ({
-    base_dir,
-    content,
-    in_dir,
-    out_dir,
-    dry_run = false,
-    number,
-    vars = {},
-  }) => {
+  return (
+    { base_dir, content, in_dir, out_dir, dry_run = false, number, vars = {} },
+    hooks
+  ) => {
     const new_file_path = make_new_path({
       base_dir,
       in_dir,
@@ -26,11 +21,14 @@ export const make_create_file_sync: ICreateFileSync.Func = (
     });
 
     if (!dry_run) {
-      const result = create_file_func({
-        path: new_file_path,
-        content: contentParser(content, vars, { number }),
-        dry_run,
-      });
+      const result = create_file_func(
+        {
+          path: new_file_path,
+          content: contentParser(content, vars, { number }),
+          dry_run,
+        },
+        hooks
+      );
 
       if (result.isError()) {
         return result as unknown as Result<string, unknown>;
@@ -44,23 +42,21 @@ export const make_create_file_sync: ICreateFileSync.Func = (
 export const make_create_file: ICreateFile.Func = (
   create_file_func = write_file
 ) => {
-  return async ({
-    base_dir,
-    content,
-    in_dir,
-    out_dir,
-    dry_run = false,
-    number,
-    vars = {},
-  }) => {
+  return async (
+    { base_dir, content, in_dir, out_dir, dry_run = false, number, vars = {} },
+    hooks
+  ) => {
     const new_file_path = make_new_path({ base_dir, in_dir, out_dir, vars });
 
     if (!dry_run) {
-      const result = await create_file_func({
-        path: new_file_path,
-        content: contentParser(content, vars, { number }),
-        dry_run,
-      });
+      const result = await create_file_func(
+        {
+          path: new_file_path,
+          content: contentParser(content, vars, { number }),
+          dry_run,
+        },
+        hooks
+      );
 
       if (result.isError()) {
         return result as unknown as Result<string, unknown>;

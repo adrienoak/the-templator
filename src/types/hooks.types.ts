@@ -1,13 +1,13 @@
 import {
-  OnFileExists,
-  OnMkDir,
-  OnReadFile,
+  OnFileExistsHook,
+  OnMkDirHook,
+  OnReadFileHook,
   OnWriteContent,
 } from "../module/fs";
 
 export interface ITemplatorHooks {
-  on_read_file?: OnReadFile;
-  on_mkdir?: OnMkDir;
-  on_file_exists?: OnFileExists;
+  on_read_file?: OnReadFileHook;
+  on_mkdir?: OnMkDirHook;
+  on_file_exists?: OnFileExistsHook;
   on_write_file?: OnWriteContent;
 }

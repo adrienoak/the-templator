@@ -1,34 +1,33 @@
-import {
-  ITemplator,
-  I_The_Templator,
-  the_templator_object_schema,
-  the_templator_schema,
-  Vars_Schema,
-} from "./types";
-import { validate_args, validator_of_args } from "./arg-validator";
-
-export function validate(value: I_The_Templator) {
-  return validator_of_args(value);
-}
+import { Result } from "@swan-io/boxed";
+import { ZodError } from "zod";
+import { file_exists, OnFileExistsHook } from "../fs";
+import { in_dir_non_existant, out_dir_taken } from "./error-messages";
+import { validate_struct } from "./struct-validator";
+import { ITemplator, I_The_Templator } from "./types";
 
 export function validator(
-  value: I_The_Templator | string,
-  out_dir?: string | boolean,
-  vars: Vars_Schema = {},
-  number: number = 2
-) {
-  if (typeof value === "object") {
-    const validate_result = validate_args(value);
+  value: I_The_Templator,
+  on_file_exists?: OnFileExistsHook
+): Result<ITemplator, string | ZodError> {
+  const arg = validate_struct(value);
 
-    return validate_result;
+  if (arg.isError()) {
+    return Result.Error(arg.getError());
   }
 
-  const validate_result = validate_args({
-    in_dir: value as string,
-    out_dir: out_dir as string,
-    vars,
-    number,
-  });
+  const { in_dir, out_dir } = arg.get();
 
-  return validate_result;
+  const in_dir_exists = file_exists(in_dir, on_file_exists);
+
+  if (!in_dir_exists) {
+    return Result.Error(in_dir_non_existant);
+  }
+
+  const out_dir_exists = file_exists(out_dir, on_file_exists);
+
+  if (out_dir_exists) {
+    return Result.Error(out_dir_taken);
+  }
+
+  return arg;
 }

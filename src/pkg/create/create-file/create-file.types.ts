@@ -1,5 +1,5 @@
 import { Result } from "@swan-io/boxed";
-import { IWriteFile, IWriteFileSync } from "../../../module/fs";
+import { AsyncTest, IWriteHooks, SyncTest } from "../../../module/fs";
 import { Vars } from "../../../module/validator";
 
 export type ICreateFileArgs = {
@@ -13,16 +13,18 @@ export type ICreateFileArgs = {
 };
 export namespace ICreateFile {
   export type Create = (
-    create_file_args: ICreateFileArgs
+    create_file_args: ICreateFileArgs,
+    hooks?: IWriteHooks
   ) => Promise<Result<string, unknown>>;
 
-  export type Func = (create_file_func?: IWriteFile.WriteFile) => Create;
+  export type Func = (create_file_func?: AsyncTest.WriteFile) => Create;
 }
 
 export namespace ICreateFileSync {
   export type Create = (
-    create_file_args: ICreateFileArgs
+    create_file_args: ICreateFileArgs,
+    hooks?: IWriteHooks
   ) => Result<string, unknown>;
 
-  export type Func = (create_file_func?: IWriteFileSync.WriteFile) => Create;
+  export type Func = (create_file_func?: SyncTest.WriteFile) => Create;
 }

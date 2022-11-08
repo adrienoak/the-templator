@@ -4,7 +4,7 @@ import { afterEach, assert, describe, expect, it, vi } from "vitest";
 import { calc_path_existing } from "../../../utils";
 import { file_exists } from "../file-exists";
 import { read_file, read_file_sync } from "../read-file";
-import { make_write_file, make_write_file_sync } from "./write-file";
+import { make_write_file_sync, make_write_file } from "./write-file";
 
 const base_path = process.cwd();
 
@@ -109,7 +109,11 @@ describe("make_write_file", () => {
       const content = "test";
 
       const write_file_func = vi.fn().mockRejectedValueOnce({ code: "enoent" });
-      const make_dir_func = vi.fn();
+      const make_dir_func = vi.fn().mockResolvedValueOnce({
+        isOk() {
+          return true;
+        },
+      });
 
       const func = make_write_file({ write_file_func, make_dir_func });
 
@@ -123,7 +127,6 @@ describe("make_write_file", () => {
       });
     });
 
-    //
     it("if it initially errors out with some other error, it should just be handled by the Result", async () => {
       const file = "file.js";
       const path = join(base_path, file);
@@ -144,7 +147,6 @@ describe("make_write_file", () => {
       });
     });
 
-    //
     it("no function ever gets called in case of dry_run=true", async () => {
       const file = "file.js";
       const path = join(base_path, file);
@@ -269,7 +271,11 @@ describe("make_write_file_sync", () => {
       const write_file_func = vi.fn().mockImplementationOnce(() => {
         throw { code: "enoent" };
       });
-      const make_dir_func = vi.fn();
+      const make_dir_func = vi.fn().mockReturnValue({
+        isOk() {
+          return true;
+        },
+      });
 
       const func = make_write_file_sync({ write_file_func, make_dir_func });
 
@@ -283,7 +289,6 @@ describe("make_write_file_sync", () => {
       });
     });
 
-    //
     it("if it initially errors out with some other error, it should just be handled by the Result", () => {
       const file = "file.js";
       const path = join(base_path, file);
@@ -306,7 +311,6 @@ describe("make_write_file_sync", () => {
       });
     });
 
-    //
     it("no function ever gets called in case of dry_run=true", () => {
       const file = "file.js";
       const path = join(base_path, file);
@@ -325,7 +329,5 @@ describe("make_write_file_sync", () => {
       expect(make_dir_func).not.toHaveBeenCalled();
       expect(write_file_func).not.toHaveBeenCalled();
     });
-
-    //
   });
 });

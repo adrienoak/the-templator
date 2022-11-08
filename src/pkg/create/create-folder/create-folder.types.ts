@@ -1,8 +1,8 @@
 import { Result } from "@swan-io/boxed";
-import { IMakeDir, IMakeDirSync } from "../../../module/fs";
+import { IMakeDir, IMakeDirSync, OnMkDirHook } from "../../../module/fs";
 import { Vars } from "../../../module/validator";
 
-export type ICreateFolderArgs = {
+type ICreateFolderArgs = {
   base_dir: string;
   in_dir: string;
   out_dir: string;
@@ -12,16 +12,18 @@ export type ICreateFolderArgs = {
 };
 
 export namespace ICreateFolder {
-  export type Create = (
-    create_folder_args: ICreateFolderArgs
+  type Create = (
+    create_folder_args: ICreateFolderArgs,
+    hook?: OnMkDirHook
   ) => Promise<Result<string, unknown>>;
 
   export type Func = (create_folder_func?: IMakeDir.MkDir) => Create;
 }
 
 export namespace ICreateFolderSync {
-  export type Create = (
-    create_folder_args: ICreateFolderArgs
+  type Create = (
+    create_folder_args: ICreateFolderArgs,
+    hook?: OnMkDirHook
   ) => Result<string, unknown>;
 
   export type Func = (create_folder_func?: IMakeDirSync.MkDir) => Create;

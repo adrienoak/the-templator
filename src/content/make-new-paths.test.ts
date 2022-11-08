@@ -1,5 +1,5 @@
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { join, basename } from "node:path";
 import { Vars_Schema } from "../module/validator";
 import { make_new_path } from "./make-new-path";
 
